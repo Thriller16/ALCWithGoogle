@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Journal</string>
+    <string name="on_empty_event">No events have been added for this day. Click button below to add event</string>
+    <string name="date">Date</string>
+</resources>
