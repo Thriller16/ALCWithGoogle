@@ -48,8 +48,12 @@ public class ViewEvent extends AppCompatActivity {
 
         fulldate = currentDay + "/" + (Integer.parseInt(currentMonth)+1) +"/"+ currentYear;
 
+
+
+        String actionDate = currentDay+addSuffix(currentDay)+" " + convertToMonth((Integer.parseInt(currentMonth)+1)) + " " + currentYear;
+
         eventList = databaseAccess.checkWithDate(fulldate);
-        getSupportActionBar().setTitle(fulldate);
+        getSupportActionBar().setTitle(actionDate);
 
 
         if (!eventList.isEmpty()) {
@@ -115,6 +119,7 @@ public class ViewEvent extends AppCompatActivity {
         editText.setFocusable(true);
         editText.setFocusableInTouchMode(true);
         editFab.setImageResource(R.drawable.ic_done_black_24dp);
+        Toast.makeText(this, "Edit Mode On", Toast.LENGTH_SHORT).show();
 
         if (eventList.isEmpty()) {
             editText.setText("");
@@ -164,5 +169,81 @@ public class ViewEvent extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public String convertToMonth(int number){
+        String monthName = "";
+        switch (number){
+            case 1:
+                monthName = "January";
+                break;
+
+            case 2:
+                monthName = "February";
+                break;
+
+            case 3:
+                monthName = "March";
+                break;
+
+            case 4:
+                monthName = "April";
+                break;
+
+            case 5:
+                monthName = "May";
+                break;
+
+            case 6:
+                monthName = "June";
+                break;
+
+            case 7:
+                monthName = "July";
+                break;
+
+            case 8:
+                monthName = "August";
+                break;
+
+            case 9:
+                monthName = "September";
+                break;
+
+            case 10:
+                monthName = "October";
+                break;
+
+            case 11:
+                monthName = "November";
+                break;
+
+            case 12:
+                monthName = "December";
+                break;
+        }
+
+        return monthName;
+    }
+
+    public String addSuffix(String day){
+        String suffix = "";
+
+        if(day.equals("1") || day.equals("21") || day.equals("31")){
+            suffix = "st";
+        }
+
+        else if(day.equals("2") || day.equals("22")){
+            suffix = "nd";
+        }
+        else if(day.equals("3") || day.equals("23")){
+            suffix = "rd";
+        }
+
+        else{
+            suffix = "th";
+        }
+        return suffix;
     }
 }
