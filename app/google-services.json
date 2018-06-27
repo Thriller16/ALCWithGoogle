@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "580232459922",
+    "firebase_url": "https://alcwith.firebaseio.com",
+    "project_id": "alcwith",
+    "storage_bucket": "alcwith.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580232459922:android:335b996674dc82f7",
+        "android_client_info": {
+          "package_name": "ng.com.africasupport.alcwithgoogle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "580232459922-l39a6v8t68d3epqoah4fn7e19la5olll.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ng.com.africasupport.alcwithgoogle",
+            "certificate_hash": "8d2dadc1b22907eb23da57958ba96a92284b362b"
+          }
+        },
+        {
+          "client_id": "580232459922-qov30ocl5rc54g692bkq6e99n9u6bkgs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqZmB0OmzjoEpirQzvThb_lP9cwTcYpNc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "580232459922-qov30ocl5rc54g692bkq6e99n9u6bkgs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

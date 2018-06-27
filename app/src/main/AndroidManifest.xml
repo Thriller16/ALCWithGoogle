@@ -20,6 +20,7 @@
             android:name=".ViewEvent"
             android:label="Event"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>
