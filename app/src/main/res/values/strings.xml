@@ -2,4 +2,6 @@
     <string name="app_name">Journal</string>
     <string name="on_empty_event">No events have been added for this day. Click button below to add event</string>
     <string name="date">Date</string>
+    <string name="sign_up_text">Sign Up</string>
+    <string name="need_a_new_account_text">Need a new account?</string>
 </resources>

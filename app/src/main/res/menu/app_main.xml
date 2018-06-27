@@ -8,5 +8,6 @@
         android:title="Sort by time"/>
 
     <item
-        android:title="Logout"/>
+        android:title="Logout"
+        android:id="@+id/logout"/>
 </menu>

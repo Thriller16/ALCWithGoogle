@@ -1,5 +1,6 @@
 package ng.com.africasupport.alcwithgoogle;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +12,14 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ViewEvent extends AppCompatActivity {
@@ -23,6 +31,16 @@ public class ViewEvent extends AppCompatActivity {
     DatabaseAccess databaseAccess;
     List<Event> eventList = new ArrayList<>();
     String fulldate;
+    ProgressDialog mProgressDialog;
+
+
+
+    DatabaseReference mEventDatabase;
+    FirebaseAuth mFireAuth;
+    FirebaseUser mCurrentUser;
+
+    String actionDate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,33 +51,32 @@ public class ViewEvent extends AppCompatActivity {
         relativeLayout = findViewById(R.id.home_layout);
         editFab = findViewById(R.id.edit_fab);
         editText = findViewById(R.id.edit_text);
+        mProgressDialog = new ProgressDialog(this);
 
 
+//        Firebase database
+        mFireAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mFireAuth.getCurrentUser();
+
+        mEventDatabase = FirebaseDatabase.getInstance().getReference().child("Events").child(mCurrentUser.getUid());
         databaseAccess = DatabaseAccess.getInstance(this);
         databaseAccess.open();
-
         editText.setEnabled(false);
         //      Gathering of all the string extras
         dateClicked = getIntent().getStringExtra("dateInMills");
         currentYear = getIntent().getStringExtra("year");
         currentMonth = getIntent().getStringExtra("month");
         currentDay = getIntent().getStringExtra("day");
-
-
         fulldate = currentDay + "/" + (Integer.parseInt(currentMonth)+1) +"/"+ currentYear;
 
-
-
-        String actionDate = currentDay+addSuffix(currentDay)+" " + convertToMonth((Integer.parseInt(currentMonth)+1)) + " " + currentYear;
+        actionDate = currentDay+addSuffix(currentDay)+" " + convertToMonth((Integer.parseInt(currentMonth)+1)) + " " + currentYear;
 
         eventList = databaseAccess.checkWithDate(fulldate);
         getSupportActionBar().setTitle(actionDate);
 
-
         if (!eventList.isEmpty()) {
             editText.setText(eventList.get(0).getEvent());
         }
-
 
 //        This is wher ei set onclick listeners for the fab
         editFab.setOnClickListener(new View.OnClickListener() {
@@ -75,9 +92,27 @@ public class ViewEvent extends AppCompatActivity {
 
                         }
                         else if (!editText.getText().toString().equals("")) {
-                            databaseAccess.add(fulldate, editText.getText().toString());
-                            Toast.makeText(ViewEvent.this, "Event has been added to today", Toast.LENGTH_SHORT).show();
-                            eventList = databaseAccess.checkWithDate(fulldate);
+
+
+                            mProgressDialog.show();
+                            mProgressDialog.setTitle("Please Wait");
+                            mProgressDialog.setMessage("Adding your event");
+
+//                            Update on firebase
+                            HashMap<String, Object> eventHashmap = new HashMap<>();
+                            eventHashmap.put("day", fulldate);
+                            eventHashmap.put("event", editText.getText().toString());
+
+
+                            mEventDatabase.child(actionDate).setValue(eventHashmap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    mProgressDialog.dismiss();
+                                    databaseAccess.add(fulldate, editText.getText().toString());
+                                    Toast.makeText(ViewEvent.this, "Event has been added to today", Toast.LENGTH_SHORT).show();
+                                    eventList = databaseAccess.checkWithDate(fulldate);
+                                }
+                            });
                         }
 
 
@@ -88,10 +123,29 @@ public class ViewEvent extends AppCompatActivity {
                             Toast.makeText(ViewEvent.this, "Write an event to save", Toast.LENGTH_SHORT).show();
                             editText.setText(eventList.get(0).getEvent());
 
-                        } else if (!editText.getText().toString().equals("")) {
-                            databaseAccess.updateEvents(editText.getText().toString(), fulldate);
-                            Toast.makeText(ViewEvent.this, "Done editing this event", Toast.LENGTH_SHORT).show();
-                            eventList = databaseAccess.checkWithDate(fulldate);
+                        }
+
+                        else if (!editText.getText().toString().equals("")) {
+                            mProgressDialog.show();
+                            mProgressDialog.setTitle("Please Wait");
+                            mProgressDialog.setMessage("Adding your event");
+//                            Update on firebase
+
+                            HashMap<String, Object> eventHashmap = new HashMap<>();
+                            eventHashmap.put("day", fulldate);
+                            eventHashmap.put("event", editText.getText().toString());
+
+                            mEventDatabase.child(actionDate).setValue(eventHashmap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    mProgressDialog.dismiss();
+                                    databaseAccess.updateEvents(editText.getText().toString(), fulldate);
+                                    Toast.makeText(ViewEvent.this, "Done editing this event", Toast.LENGTH_SHORT).show();
+                                    eventList = databaseAccess.checkWithDate(fulldate);
+
+                                }
+                            });
+
 
                         }
 
@@ -153,7 +207,7 @@ public class ViewEvent extends AppCompatActivity {
 
 
 
-//THis will create teh menu to be infalted by the app
+//THis will create teh menu to be inflated by the app
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.delete) {
@@ -162,9 +216,15 @@ public class ViewEvent extends AppCompatActivity {
                 Toast.makeText(this, "No event has been added to this day", Toast.LENGTH_SHORT).show();
             }
             else {
-                databaseAccess.delete(fulldate);
-                Toast.makeText(this, "Event has been deleted", Toast.LENGTH_SHORT).show();
-                finish();
+                mEventDatabase.child(actionDate).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        databaseAccess.delete(fulldate);
+                        Toast.makeText(ViewEvent.this, "Event has been deleted", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+
             }
         }
 

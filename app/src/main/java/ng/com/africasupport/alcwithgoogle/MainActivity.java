@@ -10,11 +10,17 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    FirebaseAuth mFireAuth;
+    FirebaseUser mCurrentUser;
 
     CalendarView calendarView;
     String dateInMills, mYear, mMonth, mDay;
@@ -24,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        mFireAuth = FirebaseAuth.getInstance();
 
 
         calendarView = findViewById(R.id.calender_view);
@@ -61,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
                         .putExtra("day", mDay));
             }
         });
+
+
+
+
     }
 
 
@@ -73,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.logout:
+                mFireAuth.signOut();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -150,5 +166,20 @@ public class MainActivity extends AppCompatActivity {
             suffix = "th";
         }
         return suffix;
+    }
+
+    @Override
+    protected void onStart() {
+        mCurrentUser = mFireAuth.getCurrentUser();
+        if(mCurrentUser == null){
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        }
+        super.onStart();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 }
